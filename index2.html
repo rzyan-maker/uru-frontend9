@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <title>ՈւՐՈւ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">ՈւՐՈւ</h1>
+                <nav class="top-nav">
+                    <a href="#" class="nav-link" onclick="location.reload()">ԳԼԽԱՎՈՐ</a>
+                </nav>
+            </div>
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="location-search" placeholder="Որոնել վայրը...">
+            </div>
+
+            <div id="info-panel" class="dynamic-content">
+                <div class="welcome-msg">
+                    <i class="fa-solid fa-compass"></i>
+                    <p>ԸՆՏՐԵՔ ՈՒՂԵՎՈՐՈՒԹՅԱՆ ՎԱՅՐԸ</p>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">ՈւՐՈւ &copy; 2026</div>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <script src="script2.js"></script>
+</body>
+</html>
