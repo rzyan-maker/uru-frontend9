@@ -103,3 +103,34 @@ async function loadUruData() {
 
 // 6. Միացնում ենք ֆունկցիան
 loadUruData();
+document.addEventListener('DOMContentLoaded', () => {
+    // Ստուգում ենք՝ արդյոք այս էջում կա այն div-ը, որտեղ պետք է լցվեն տվյալները
+    const container = document.getElementById('sights-container');
+
+    if (container) {
+        loadUruData(); // Կանչում ենք ֆունկցիան միայն եթե container-ը կա
+    }
+});
+
+async function loadUruData() {
+    const API_URL = "https://uru-backend.onrender.com/api/sights";
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        const container = document.getElementById('sights-container');
+        container.innerHTML = ""; 
+
+        data.forEach(item => {
+            container.innerHTML += `
+                <div class="luxury-card">
+                    <img src="${item.image}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.location}</p>
+                </div>
+            `;
+        });
+    } catch (err) {
+        console.error("Սխալ բեքենդից տվյալ ստանալիս:", err);
+    }
+}
