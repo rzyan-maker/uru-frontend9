@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URU - Armenian City Indicator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+
+    <div class="custom-cursor"></div>
+
+    <header class="luxury-nav">
+        <div class="nav-logo">ՈւՐՈւ</div>
+        <div class="search-container">
+            <input type="text" placeholder="Փնտրել ուղղություն..." id="navSearch">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <nav class="nav-links">
+    <a href="index.html" class="active-link">Գլխավոր</a>
+    <a href="../timeline/index.html">Դարի գիծ</a>
+    <a href="#">Քարտեզ</a>
+</nav>
+    </header>
+
+    <section class="premium-hero">
+        <div class="hero-bg js-parallax"></div>
+        
+        <div class="content-wrapper js-fade-in">
+            <div class="symbol-container">
+                <div class="tri-group">
+                    <div class="tri"></div>
+                    <div class="tri active-tri"></div>
+                    <div class="tri"></div>
+                </div>
+                <div class="spike-group">
+                    <div class="spike"></div>
+                    <div class="spike"></div>
+                </div>
+            </div>
+
+            <h1 class="main-title">ՈւՐՈւ <small>Քաղաքի ցուցիչ</small></h1>
+
+            <div class="action-btns">
+                <div class="btn-row">
+                    <button class="uru-btn glass-btn"><i class="fas fa-map-marked-alt"></i> Քարտեզ</button>
+                   <button class="uru-btn glass-btn" onclick="window.location.href='timeline/index.html'">
+                                         <i class="fas fa-stream"></i> Դարի գիծ
+                    </button>
+                </div>
+                <button class="uru-btn gold-full-btn">
+                    <i class="fas fa-mountain"></i> Զբոսաշրջային տեսարժան վայր
+                </button>
+            </div>
+        </div>
+
+       
+    </section>
+
+    <section id="about" class="about-premium">
+
+    <div class="about-container">
+
+        <!-- Ձախ մաս (քարտ) -->
+        <div class="about-visual">
+            <div class="luxury-glass-card">
+                <div class="card-inner">
+                    <div class="card-glow"></div>
+                    <i class="fas fa-gem card-icon"></i> 
+                    <div class="card-footer">Ստեղծված է գերազանցության համար</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Աջ մաս (տեքստ) -->
+        <div class="about-content">
+            <span class="section-tag">Ուսումնասիրեք Հայաստանը</span>
+
+            <h2 class="about-title">
+                Ինչ է <span>ՈւՐՈւ</span>-ն
+            </h2>
+
+            <p class="about-description">
+                ՈւՐՈւ ստեղծված է նրանց համար, ովքեր գնահատում են որակը։
+                Մենք միավորում ենք Հայաստանի պատմությունը և ժամանակակից տեխնոլոգիաները՝
+                ստեղծելով գեղեցիկ ու օգտակար փորձառություն։
+            </p>
+
+            <div class="features-list">
+
+                <div class="feat-card">
+                    <div class="icon-box"><i class="fas fa-fingerprint"></i></div>
+                    <div>
+                        <h4>Յուրօրինակություն</h4>
+                        <p>Միայն բացառիկ ուղղություններ</p>
+                    </div>
+                </div>
+
+                <div class="feat-card">
+                    <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h4>Որակ</h4>
+                        <p>Ստուգված և վստահելի ինֆո</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+    <script src="script.js"></script>
+    <div id="sights-container">
+    </div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
