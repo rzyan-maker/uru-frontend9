@@ -4,16 +4,16 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 const markers = L.layerGroup().addTo(map);
 let activeRoute = null;
 
-// Ավելացված նոր վայրեր
+// 1. Ավելացված ID-ներ, որոնք պետք է համընկնեն script3.js-ի տվյալների հետ
 const destinations = [
-    { name: "ՀԱՂՊԱՏ", type: "ՎԱՆՔ", lat: 41.0938, lng: 44.7120, icon: "fa-church", bio: "10-րդ դարի հոգևոր կենտրոն, ՅՈՒՆԵՍԿՕ-ի ժառանգություն:" },
-    { name: "ԼՈՌԻ ԲԵՐԴ", type: "ԱՄՐՈՑ", lat: 41.0039, lng: 44.4283, icon: "fa-fort-awesome", bio: "Անառիկ միջնադարյան ամրոց Ձորագետի կիրճի վրա:" },
-    { name: "ՔՈԲԱՅՐ", type: "ՎԱՆՔ", lat: 41.0041, lng: 44.6345, icon: "fa-gopuram", bio: "12-րդ դարի հայ-վրացական վանական համալիր՝ հայտնի իր որմնանկարներով:" },
-    { name: "ԱՐԴՎԻ", type: "ՍՈՒՐԲ ՀՈՎՀԱՆՆԵՍ", lat: 41.0185, lng: 44.5872, icon: "fa-cross", bio: "Հայաստանի ամենագեղեցիկ ու խաղաղ գյուղական վանքերից մեկը:" },
-    { name: "ՕՁՈՒՆ", type: "ԵԿԵՂԵՑԻ", lat: 41.0508, lng: 44.6121, icon: "fa-place-of-worship", bio: "6-րդ դարի հոյակերտ գմբեթավոր բազիլիկ եկեղեցի:" },
-    { name: "ՍԵՎԱՆԱՎԱՆՔ", type: "ԼԻՃ", lat: 40.5639, lng: 44.9733, icon: "fa-water", bio: "Սևանա լճի թերակղզու վրա գտնվող հանրահայտ վանական համալիր:" },
-    { name: "ԳԱՌՆԻ", type: "ՏԱՃԱՐ", lat: 40.1118, lng: 44.7303, icon: "fa-columns", bio: "Հայաստանում պահպանված միակ հեթանոսական տաճարը:" },
-    { name: "ԳԵՂԱՐԴ", type: "ՎԱՆՔ", lat: 40.1404, lng: 44.8185, icon: "fa-gem", bio: "Ժայռափոր եկեղեցի, որտեղ պահվել է սուրբ Գեղարդը:" }
+    { id: "haghpat", name: "ՀԱՂՊԱՏ", type: "ՎԱՆՔ", lat: 41.0938, lng: 44.7120, icon: "fa-church", bio: "10-րդ դարի հոգևոր կենտրոն, ՅՈՒՆԵՍԿՕ-ի ժառանգություն:" },
+    { id: "lori_berd", name: "ԼՈՌԻ ԲԵՐԴ", type: "ԱՄՐՈՑ", lat: 41.0039, lng: 44.4283, icon: "fa-fort-awesome", bio: "Անառիկ միջնադարյան ամրոց Ձորագետի կիրճի վրա:" },
+    { id: "kobayr", name: "ՔՈԲԱՅՐ", type: "ՎԱՆՔ", lat: 41.0041, lng: 44.6345, icon: "fa-gopuram", bio: "12-րդ դարի հայ-վրացական վանական համալիր՝ հայտնի իր որմնանկարներով:" },
+    { id: "ardvi", name: "ԱՐԴՎԻ", type: "ՍՈՒՐԲ ՀՈՎՀԱՆՆԵՍ", lat: 41.0185, lng: 44.5872, icon: "fa-cross", bio: "Հայաստանի ամենագեղեցիկ ու խաղաղ գյուղական վանքից մեկը:" },
+    { id: "odzun", name: "ՕՁՈՒՆ", type: "ԵԿԵՂԵՑԻ", lat: 41.0508, lng: 44.6121, icon: "fa-place-of-worship", bio: "6-րդ դարի հոյակերտ գմբեթավոր բազիլիկ եկեղեցի:" },
+    { id: "sevan", name: "ՍԵՎԱՆԱՎԱՆՔ", type: "ԼԻՃ", lat: 40.5639, lng: 44.9733, icon: "fa-water", bio: "Սևանա լճի թերակղզու վրա գտնվող հանրահայտ վանական համալիր:" },
+    { id: "garni", name: "ԳԱՌՆԻ", type: "ՏԱՃԱՐ", lat: 40.1118, lng: 44.7303, icon: "fa-columns", bio: "Հայաստանում պահպանված միակ հեթանոսական տաճարը:" },
+    { id: "geghard", name: "ԳԵՂԱՐԴ", type: "ՎԱՆՔ", lat: 40.1404, lng: 44.8185, icon: "fa-gem", bio: "Ժայռափոր եկեղեցի, որտեղ պահվել է սուրբ Գեղարդը:" }
 ];
 
 function createLuxIcon(iconName) {
@@ -40,6 +40,7 @@ renderMarkers();
 
 document.getElementById('location-search').addEventListener('input', (e) => renderMarkers(e.target.value));
 
+// 2. Թարմացված ինֆո-պանել
 function showDetails(site) {
     const panel = document.getElementById('info-panel');
     panel.innerHTML = `
@@ -50,16 +51,22 @@ function showDetails(site) {
             
             <div class="btn-group">
                 <button class="btn-uru btn-go" onclick="buildRoute(${site.lat}, ${site.lng})">ԿԱՌՈՒՑԵԼ ՈՒՂԻՆ</button>
-                <button class="btn-uru btn-info" onclick="toggleBio()">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</button>
+                <button class="btn-uru btn-info" onclick="goToDetails('${site.id}')">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</button>
             </div>
             <div id="route-res" style="margin-top:20px;"></div>
         </div>
     `;
 }
 
-window.toggleBio = function() {
-    const bio = document.getElementById('site-bio');
-    bio.style.display = bio.style.display === 'none' ? 'block' : 'none';
+// 3. Նոր ֆունկցիա՝ նոր էջին անցնելու համար
+window.goToDetails = function(id) {
+    // Ավելացնում ենք սահուն անհետացում նախքան էջը փոխելը
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.6s ease';
+    
+    setTimeout(() => {
+        window.location.href = `index3.html?id=${id}`;
+    }, 600);
 };
 
 window.buildRoute = function(lat, lng) {
