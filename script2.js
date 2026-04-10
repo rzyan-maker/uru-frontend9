@@ -1,94 +1,150 @@
-const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([40.1792, 44.5133], 9);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-const markers = L.layerGroup().addTo(map);
-let activeRoute = null;
-
-// 1. Ավելացված ID-ներ, որոնք պետք է համընկնեն script3.js-ի տվյալների հետ
-const destinations = [
-    { id: "haghpat", name: "ՀԱՂՊԱՏ", type: "ՎԱՆՔ", lat: 41.0938, lng: 44.7120, icon: "fa-church", bio: "10-րդ դարի հոգևոր կենտրոն, ՅՈՒՆԵՍԿՕ-ի ժառանգություն:" },
-    { id: "lori_berd", name: "ԼՈՌԻ ԲԵՐԴ", type: "ԱՄՐՈՑ", lat: 41.0039, lng: 44.4283, icon: "fa-fort-awesome", bio: "Անառիկ միջնադարյան ամրոց Ձորագետի կիրճի վրա:" },
-    { id: "kobayr", name: "ՔՈԲԱՅՐ", type: "ՎԱՆՔ", lat: 41.0041, lng: 44.6345, icon: "fa-gopuram", bio: "12-րդ դարի հայ-վրացական վանական համալիր՝ հայտնի իր որմնանկարներով:" },
-    { id: "ardvi", name: "ԱՐԴՎԻ", type: "ՍՈՒՐԲ ՀՈՎՀԱՆՆԵՍ", lat: 41.0185, lng: 44.5872, icon: "fa-cross", bio: "Հայաստանի ամենագեղեցիկ ու խաղաղ գյուղական վանքից մեկը:" },
-    { id: "odzun", name: "ՕՁՈՒՆ", type: "ԵԿԵՂԵՑԻ", lat: 41.0508, lng: 44.6121, icon: "fa-place-of-worship", bio: "6-րդ դարի հոյակերտ գմբեթավոր բազիլիկ եկեղեցի:" },
-    { id: "sevan", name: "ՍԵՎԱՆԱՎԱՆՔ", type: "ԼԻՃ", lat: 40.5639, lng: 44.9733, icon: "fa-water", bio: "Սևանա լճի թերակղզու վրա գտնվող հանրահայտ վանական համալիր:" },
-    { id: "garni", name: "ԳԱՌՆԻ", type: "ՏԱՃԱՐ", lat: 40.1118, lng: 44.7303, icon: "fa-columns", bio: "Հայաստանում պահպանված միակ հեթանոսական տաճարը:" },
-    { id: "geghard", name: "ԳԵՂԱՐԴ", type: "ՎԱՆՔ", lat: 40.1404, lng: 44.8185, icon: "fa-gem", bio: "Ժայռափոր եկեղեցի, որտեղ պահվել է սուրբ Գեղարդը:" }
-];
-
-function createLuxIcon(iconName) {
-    return L.divIcon({
-        className: 'custom-icon',
-        html: `<div class="uru-marker-pin"><i class="fa-solid ${iconName}"></i></div>`,
-        iconSize: [45, 45], iconAnchor: [22, 45]
-    });
-}
-
-function renderMarkers(search = "") {
-    markers.clearLayers();
-    destinations.forEach(d => {
-        if (d.name.toLowerCase().includes(search.toLowerCase())) {
-            L.marker([d.lat, d.lng], { icon: createLuxIcon(d.icon) }).addTo(markers).on('click', () => {
-                showDetails(d);
-                map.flyTo([d.lat, d.lng], 14);
-            });
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Տվյալների բազա (Բոլոր 8 վայրերը)
+    const placesData = {
+        'haghpat': {
+            title: 'ՀԱՂՊԱՏԱՎԱՆՔ',
+            region: 'ԼՈՌԻ',
+            type: 'ՎԱՆԱԿԱՆ ՀԱՄԱԼԻՐ',
+            date: 'X-XIII ԴԱՐԵՐ',
+            history: 'Հաղպատի վանական համալիրը միջնադարյան Հայաստանի հոգևոր և գիտական խոշոր կենտրոններից է։ Այն ՅՈՒՆԵՍԿՕ-ի համաշխարհային ժառանգության մաս է։',
+            mainImg: 'https://armenia-tour.am/wp-content/uploads/2021/03/haghpat-monastery.jpg',
+            mosaic: ['https://haghpat.com/wp-content/uploads/2020/01/1.jpg', 'https://haghpat.com/wp-content/uploads/2020/01/2.jpg', 'https://haghpat.com/wp-content/uploads/2020/01/3.jpg', 'https://haghpat.com/wp-content/uploads/2020/01/4.jpg', 'https://haghpat.com/wp-content/uploads/2020/01/5.jpg', 'https://haghpat.com/wp-content/uploads/2020/01/6.jpg']
+        },
+        'lori_berd': {
+            title: 'ԼՈՌԻ ԲԵՐԴ',
+            region: 'ԼՈՌԻ',
+            type: 'ԱՄՐՈՑ',
+            date: 'XI ԴԱՐ',
+            history: 'Լոռի Բերդը Կյուրիկյան թագավորության մայրաքաղաքն էր։ Այն գտնվում է Ձորագետ և Ուռուտ գետերի միախառնման վայրում՝ անառիկ կիրճերի եզրին։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366', // Փոխիր իրական նկարով
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'kobayr': {
+            title: 'ՔՈԲԱՅՐԻ ՎԱՆՔ',
+            region: 'ԼՈՌԻ',
+            type: 'ՎԱՆԱԿԱՆ ՀԱՄԱԼԻՐ',
+            date: 'XII-XIII ԴԱՐԵՐ',
+            history: 'Քոբայրը հայտնի է իր բարձրարժեք որմնանկարներով, որոնք պահպանվել են եկեղեցու պատերին։ Այն եղել է միջնադարյան կարևոր հոգևոր օջախ։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'ardvi': {
+            title: 'ԱՐԴՎԻ (ՍԲ. ՀՈՎՀԱՆՆԵՍ)',
+            region: 'ԼՈՌԻ',
+            type: 'ԵԿԵՂԵՑԻ',
+            date: 'XVII-XIX ԴԱՐԵՐ',
+            history: 'Արդվիի Սուրբ Հովհաննես վանքը հայտնի է իր գեղեցիկ տեսարաններով։ Այստեղ է նկարահանվել Սերգեյ Փարաջանովի «Նռան գույնը» ֆիլմի որոշ հատվածներ։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'odzun': {
+            title: 'ՕՁՈՒՆԻ ԵԿԵՂԵՑԻ',
+            region: 'ԼՈՌԻ',
+            type: 'ԳՄԲԵԹԱՎՈՐ ԲԱԶԻԼԻԿ',
+            date: 'VI ԴԱՐ',
+            history: 'Օձունի տաճարը վաղ միջնադարյան հայկական ճարտարապետության եզակի նմուշ է։ Այն առանձնահատուկ է իր արտաքին սրահով և կոթող-մահարձանով։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'sevan': {
+            title: 'ՍԵՎԱՆԱՎԱՆՔ',
+            region: 'ԳԵՂԱՐՔՈՒՆԻՔ',
+            type: 'ՎԱՆԱԿԱՆ ՀԱՄԱԼԻՐ',
+            date: 'IX ԴԱՐ',
+            history: 'Սևանավանքը գտնվում է Սևանա լճի թերակղզու վրա։ Այն հիմնադրվել է 874 թվականին Մարիամ իշխանուհու կողմից։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'garni': {
+            title: 'ԳԱՌՆԻԻ ՏԱՃԱՐ',
+            region: 'ԿՈՏԱՅՔ',
+            type: 'ՀԵԹԱՆՈՍԱԿԱՆ ՏԱՃԱՐ',
+            date: 'I ԴԱՐ',
+            history: 'Գառնին Հայաստանի տարածքում պահպանված միակ հելլենիստական տաճարն է։ Այն նվիրված է եղել արևի աստված Միհրին։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
+        },
+        'geghard': {
+            title: 'ԳԵՂԱՐԴԱՎԱՆՔ',
+            region: 'ԿՈՏԱՅՔ',
+            type: 'ԺԱՅՌԱՓՈՐ ՎԱՆՔ',
+            date: 'IV-XIII ԴԱՐԵՐ',
+            history: 'Գեղարդը ժայռափոր եկեղեցական համալիր է։ Այստեղ դարեր շարունակ պահվել է այն գեղարդը, որով հռոմեացի զինվորը խոցել է Քրիստոսին։',
+            mainImg: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366',
+            mosaic: Array(6).fill('https://images.unsplash.com/photo-1542281286-9e0a16bb7366')
         }
-    });
-}
+    };
 
-renderMarkers();
+    // 2. Էլեմենտների ընտրություն
+    const heroImage = document.getElementById('main-hero');
+    const mosaicItems = document.querySelectorAll('.mosaic-item');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const closeBtn = document.querySelector('.close-lightbox');
+    const sidebar = document.querySelector('.info-sidebar');
+    const content = document.querySelector('.content-container');
 
-document.getElementById('location-search').addEventListener('input', (e) => renderMarkers(e.target.value));
+    // 3. Տվյալների բեռնում ըստ URL ID-ի
+    const params = new URLSearchParams(window.location.search);
+    const placeId = params.get('id') || 'haghpat';
 
-// 2. Թարմացված ինֆո-պանել
-function showDetails(site) {
-    const panel = document.getElementById('info-panel');
-    panel.innerHTML = `
-        <div class="details-view">
-            <p style="color:var(--gold); font-size:10px; font-weight:800; letter-spacing:5px;">${site.type}</p>
-            <h2 class="site-title">${site.name}</h2>
-            <p id="site-bio" class="bio-text">${site.bio}</p>
-            
-            <div class="btn-group">
-                <button class="btn-uru btn-go" onclick="buildRoute(${site.lat}, ${site.lng})">ԿԱՌՈՒՑԵԼ ՈՒՂԻՆ</button>
-                <button class="btn-uru btn-info" onclick="goToDetails('${site.id}')">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</button>
-            </div>
-            <div id="route-res" style="margin-top:20px;"></div>
-        </div>
-    `;
-}
+    if (placesData[placeId]) {
+        const data = placesData[placeId];
+        document.getElementById('place-title').innerText = data.title;
+        document.querySelector('.text-content p').innerText = data.history;
+        heroImage.style.backgroundImage = `url('${data.mainImg}')`;
+        
+        mosaicItems.forEach((item, index) => {
+            if (data.mosaic[index]) {
+                item.style.backgroundImage = `url('${data.mosaic[index]}')`;
+            }
+        });
 
-// 3. Նոր ֆունկցիա՝ նոր էջին անցնելու համար
-window.goToDetails = function(id) {
-    // Ավելացնում ենք սահուն անհետացում նախքան էջը փոխելը
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.6s ease';
-    
+        const stats = document.querySelectorAll('.stat-card strong');
+        stats[0].innerText = data.region;
+        stats[1].innerText = data.type;
+        stats[2].innerText = data.date;
+    }
+
+    // 4. Անիմացիաներ բացվելիս
     setTimeout(() => {
-        window.location.href = `index3.html?id=${id}`;
-    }, 600);
-};
+        sidebar.style.opacity = '1';
+        sidebar.style.transform = 'translateX(0)';
+        content.style.opacity = '1';
+    }, 100);
 
-window.buildRoute = function(lat, lng) {
-    navigator.geolocation.getCurrentPosition(pos => {
-        if (activeRoute) map.removeControl(activeRoute);
-        activeRoute = L.Routing.control({
-            waypoints: [L.latLng(pos.coords.latitude, pos.coords.longitude), L.latLng(lat, lng)],
-            showAlternatives: true,
-            lineOptions: { styles: [{ color: '#d4af37', weight: 7, opacity: 0.9 }] },
-            createMarker: () => null
-        }).on('routesfound', e => {
-            const res = document.getElementById('route-res');
-            res.innerHTML = '';
-            e.routes.forEach((r, i) => {
-                res.innerHTML += `
-                    <div style="padding:15px; background:rgba(212,175,55,0.05); border-radius:15px; margin-top:10px; border:1px solid rgba(212,175,55,0.1);">
-                        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;">
-                            <span>ՏԱՐԲԵՐԱԿ ${i+1}</span>
-                            <span style="color:var(--gold);">${(r.summary.totalDistance/1000).toFixed(1)} կմ</span>
-                        </div>
-                    </div>`;
-            });
-        }).addTo(map);
+    // 5. Lightbox ֆունկցիոնալ
+    const openLightbox = (bgImage) => {
+        const imageUrl = bgImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        lightboxImg.src = imageUrl;
+        lightbox.style.display = 'flex';
+        setTimeout(() => lightbox.classList.add('active'), 10);
+    };
+
+    heroImage.addEventListener('click', () => openLightbox(heroImage.style.backgroundImage));
+    mosaicItems.forEach(item => {
+        item.addEventListener('click', function() {
+            openLightbox(this.style.backgroundImage);
+        });
     });
-};
+
+    const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        setTimeout(() => lightbox.style.display = 'none', 300);
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => { if (e.target !== lightboxImg) closeLightbox(); });
+
+    // 6. Սահուն անցումներ էջերի միջև
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.href;
+            sidebar.style.transform = 'translateX(-50px)';
+            sidebar.style.opacity = '0';
+            content.style.opacity = '0';
+            setTimeout(() => { window.location.href = targetUrl; }, 800);
+        });
+    });
+});
